@@ -1,7 +1,6 @@
 import itertools
 import json
 import pprint
-import http
 from kafka import KafkaProducer
 import asyncio
 import httpx
@@ -72,12 +71,3 @@ if __name__ == "__main__":
     t2 = datetime.datetime.now()
     pprint.pprint(result)
     print(str((t2-t1).seconds/60))
-    # conn = http.client.HTTPSConnection("latest-mutual-fund-nav.p.rapidapi.com")
-    # while True:
-    #     conn.request("GET", f"/fetchHistoricalNAV?Date={current_time.strftime(date_frmt)}", headers=headers)
-    #     res = conn.getresponse()
-    #     data = res.read()
-    #     future = producer.send(topic='mutualFundTopic', value=data.decode("utf-8"))
-    #     result = future.get(timeout=60)
-    #     logging.info(f'Producer write succesfully acknowldged for the data for date {current_time.strftime(date_frmt)}')
-    #     wait()
