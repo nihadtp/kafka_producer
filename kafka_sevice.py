@@ -61,7 +61,7 @@ def get_time_diff(time: int) -> str:
         return delta.strftime(date_frmt)
 
 if __name__ == "__main__":
-    logging.info("tarting the Kafka Service")
+    logging.info("Starting the Kafka Service")
     logging.info(f'Requesting mutual funds data for 5000 days from {current_time.strftime(date_frmt)}')
     deltas = list(range(1,5000))
     date_times = list(map(get_time_diff, deltas))
