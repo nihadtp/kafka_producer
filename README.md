@@ -47,3 +47,15 @@ python kafka_service.py
 
 Python application will start sending out http response to kafka. I have added logger to see the real time status.
 
+8. Concurrently open a new terminal and start a cron job using cronTab and periodically execute job.py which fetches latest NAV data from API and write out to Kafka.
+
+```
+$ cronttab -e
+* * * * * /Users/nihadtp/miniforge3/lib/python3.9 /Users/nihadtp/Downloads/prodigal/job.py
+~                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+~                                                                                                                                                                 
+~                                                                                                                                                                 
+"/tmp/crontab.wGXZbtOPBt" 2L, 92B
+```
+ Five asteroid means the script is executed every minute. You can configure the period using number of asteroids to match the requirement. 
+ For example giving 0 0 * * * will periodically run this script at every day at 0th minute and 0th hour.
