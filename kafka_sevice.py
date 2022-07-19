@@ -8,16 +8,22 @@ from typing import List
 import datetime
 import logging
 
+#Data\e formsat to the API request - DD-MMM-YYYY (01-Jan-2022)
 date_frmt = "%d-%b-%Y"
 current_time = datetime.date.today()
 logging.root.setLevel(logging.INFO)
+
+#Header Info
 headers = {
     'X-RapidAPI-Key': "11c40f05e3msh3c0494a6579ab1dp1e1b14jsn7c9e708aa936",
     'X-RapidAPI-Host': "latest-mutual-fund-nav.p.rapidapi.com"
     }
 
+#Creates a producer object with broker at localhost:9092
 producer = KafkaProducer(value_serializer=lambda v: json.dumps(v).encode('utf-8'), bootstrap_servers='localhost:9092',  max_request_size=1000000000)
 
+#Method to to send requests and concurrently process the response concurrenetly as soon as they are recieved regardless of when the
+#when the request was send. This helps more response data to be written to the Kafka
 async def historic_new(date: str, client: httpx.AsyncClient):
     params = {'Date': date}
     logging.info(f'Requested for Mututal Fund data for the date {date}')
@@ -35,6 +41,8 @@ async def historic_new(date: str, client: httpx.AsyncClient):
 
     payload = data.decode("utf-8")
 
+    #Encapsulating response inside a json structure includeing a metadata component and body. Out API reponse(payload) will inside 
+    # the body object.
     data = {
         'metadata': {
             'time': datetime.datetime.now().strftime("%d-%m-%yyyy %H:%M:%S"),
@@ -50,7 +58,7 @@ async def historic_new(date: str, client: httpx.AsyncClient):
     logging.info(f'Producer write succesfully acknowldged for the data for date {date}')
     return result
 
-
+#Fetch the reponse for all the 5000 request asynchronously and write to Kafka
 async def fetch_all(dates: List[str]) -> List[str]:
     timeout = httpx.Timeout(60.0, connect=60.0)
     async with httpx.AsyncClient(headers=headers, timeout=timeout) as client:
@@ -63,6 +71,8 @@ def get_time_diff(time: int) -> str:
 if __name__ == "__main__":
     logging.info("Starting the Kafka Service")
     logging.info(f'Requesting mutual funds data for 5000 days from {current_time.strftime(date_frmt)}')
+
+    #Capture all 5000 dates before today and store it as list.
     deltas = list(range(1,5000))
     date_times = list(map(get_time_diff, deltas))
     loop = asyncio.get_event_loop()
